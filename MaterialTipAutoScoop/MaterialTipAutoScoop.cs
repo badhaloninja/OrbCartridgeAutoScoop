@@ -11,21 +11,31 @@ namespace MaterialTipAutoScoop
     {
         public override string Name => "MaterialTipAutoScoop";
         public override string Author => "badhaloninja";
-        public override string Version => "1.0.0";
+        public override string Version => "1.1.0";
         public override string Link => "https://github.com/badhaloninja/MaterialTipAutoScoop";
-        public override void OnEngineInit()
-        {
-            Harmony harmony = new Harmony("me.badhaloninja.MaterialTipAutoScoop");
-            harmony.PatchAll();
-        }
 
-        public static int scoopSetting = 1;
+        private static ModConfiguration config;
+
+
+
+        
+        [AutoRegisterConfigKey]
+        private static readonly ModConfigurationKey<int> scoopMode = new ModConfigurationKey<int>("scoopMode", "Orb handling", () => 1, valueValidator: (i) => i.IsBetween(0, 2));
         /* 
          * Orb handling
          * 0: Always Destroy
          * 1: Drop if material is stored on orb
          * 2: Always Drop
          */
+
+        public override void OnEngineInit()
+        {
+            config = GetConfiguration();
+
+            Harmony harmony = new Harmony("me.badhaloninja.MaterialTipAutoScoop");
+            harmony.PatchAll();
+        }
+
 
 
         [HarmonyPatch(typeof(MaterialTip), "GenerateMenuItems")]
@@ -37,14 +47,14 @@ namespace MaterialTipAutoScoop
                 ContextMenuItem contextMenuItem = menu.AddItem("What", icon, default(color));
 
                 var field = contextMenuItem.Slot.AttachComponent<ValueField<int>>();
-                field.Value.Value = scoopSetting;
+                field.Value.Value = config.GetValue(scoopMode);
                 field.Value.OnValueChange += (vf) =>
-                {  // Awwfulll
-                    scoopSetting = vf.Value;
+                {  // Yeah
+                    config.Set(scoopMode, vf.Value);
                 };
 
-                contextMenuItem.AttachOptionDescriptionDriver<int>();
-                contextMenuItem.SetupValueCycle<int>(field.Value, new List<OptionDescription<int>> {
+                //contextMenuItem.AttachOptionDescriptionDriver<int>();
+                contextMenuItem.SetupValueCycle(field.Value, new List<OptionDescription<int>> {
                         new OptionDescription<int>(0, "Always Destroy Orb", new color?(color.Red), icon),
                         new OptionDescription<int>(1, "Destroy Reference Orbs", new color?(color.Yellow), icon),
                         new OptionDescription<int>(2, "Always Drop Orb", new color?(color.Green), icon)
@@ -67,7 +77,8 @@ namespace MaterialTipAutoScoop
 
                 __instance.OrbSlot.DestroyChildren(filter: (orb) =>
                  {  // Destroy if setting == 0 |OR| if setting == 1 &AND& does not have material comp
-                    if (scoopSetting != 1) return scoopSetting == 0;
+                     int scoopSetting = config.GetValue(scoopMode);
+                     if (scoopSetting != 1) return scoopSetting == 0;
                      return null == orb.GetComponent<IAssetProvider<Material>>();
                  });
 
@@ -95,7 +106,7 @@ namespace MaterialTipAutoScoop
 
             [HarmonyReversePatch]
             [HarmonyPatch(typeof(MaterialTip), "RaycastMaterial")]
-            public static IAssetProvider<Material> RaycastMaterial(MaterialTip instance, out bool hitSomething)
+            private static IAssetProvider<Material> RaycastMaterial(MaterialTip instance, out bool hitSomething)
             {
                 throw new NotImplementedException("It's a stub");
             }
