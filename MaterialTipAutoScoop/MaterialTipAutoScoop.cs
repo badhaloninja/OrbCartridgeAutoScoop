@@ -20,7 +20,7 @@ namespace MaterialTipAutoScoop
 
         
         [AutoRegisterConfigKey]
-        private static readonly ModConfigurationKey<int> scoopMode = new ModConfigurationKey<int>("scoopMode", "Orb handling", () => 1, valueValidator: (i) => i.IsBetween(0, 2));
+        private static readonly ModConfigurationKey<int> scoopMode = new ModConfigurationKey<int>("scoopMode", "<size=200%>Orb handling\n0: Always Destroy | 1: Drop if material is stored on orb | 2: Always Drop</size>", () => 1, valueValidator: (i) => i.IsBetween(0, 2)); //Desc scaled for NeosModSettings 
         /* 
          * Orb handling
          * 0: Always Destroy
