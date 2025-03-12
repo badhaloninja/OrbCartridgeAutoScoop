@@ -1,10 +1,9 @@
+using System;
+using Elements.Core;
+using System.Reflection;
 using FrooxEngine;
 using HarmonyLib;
 using ResoniteModLoader;
-using System;
-using Elements.Core;
-using System.Collections.Generic;
-using System.Reflection;
 
 namespace OrbCartridgeAutoScoop
 {
@@ -12,7 +11,7 @@ namespace OrbCartridgeAutoScoop
     {
         public override string Name => "OrbCartridgeAutoScoop";
         public override string Author => "badhaloninja";
-        public override string Version => "2.0.0";
+        public override string Version => "2.0.1";
         public override string Link => "https://github.com/badhaloninja/OrbCartridgeAutoScoop";
 
         private static ModConfiguration config;
@@ -41,7 +40,7 @@ namespace OrbCartridgeAutoScoop
         {
             config = GetConfiguration();
 
-            Harmony harmony = new("me.badhaloninja.OrbCartridgeAutoScoop");
+            Harmony harmony = new("ninja.badhalo.OrbCartridgeAutoScoop");
             harmony.PatchAll();
 
             Engine.Current.RunPostInit(() =>
@@ -75,11 +74,11 @@ namespace OrbCartridgeAutoScoop
                 field.Value.Value = config.GetValue(ScoopModeIndex);
                 field.Value.OnValueChange += (vf) => config.Set(ScoopModeIndex, vf.Value);
 
-                contextMenuItem.SetupValueCycle(field.Value, new List<OptionDescription<int>> {
+                contextMenuItem.SetupValueCycle(field.Value, [
                         new OptionDescription<int>(0, "Always Destroy Orb", RadiantUI_Constants.Hero.RED, icon),
                         new OptionDescription<int>(1, "Destroy Reference Orbs", RadiantUI_Constants.Hero.YELLOW, icon),
                         new OptionDescription<int>(2, "Always Drop Orb", RadiantUI_Constants.Hero.GREEN, icon)
-                    });
+                    ]);
             }
 
 

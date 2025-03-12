@@ -1,6 +1,5 @@
 {
   "profiles": {
-
     "Launch Mod": {
       "commandName": "Executable",
       "executablePath": "$(AppPath)$(AppName).exe",
