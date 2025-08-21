@@ -11,7 +11,7 @@ namespace OrbCartridgeAutoScoop
     {
         public override string Name => "OrbCartridgeAutoScoop";
         public override string Author => "badhaloninja";
-        public override string Version => "2.0.1";
+        public override string Version => "2.1.0";
         public override string Link => "https://github.com/badhaloninja/OrbCartridgeAutoScoop";
 
         private static ModConfiguration config;
